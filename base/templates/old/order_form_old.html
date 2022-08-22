@@ -1,0 +1,21 @@
+<!-- create/update order -->
+
+{% extends 'main.html' %}
+
+{% block content %}
+
+<div>
+    <form method="POST" action="">
+        {% csrf_token %}
+        <div>
+            <!-- as_p wraps a paragraph tag around every input field -->
+            <h1>Fill order details</h1>
+            {{form.as_p}}
+        </div>
+
+        <input type="submit" value="Add item from order_form"/>
+    </form>
+</div>
+
+{% endblock content %}
+

@@ -1,0 +1,33 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+{% if request.user.is_authenticated %}
+<a href="{% url 'update-order' order.id %}">Edit</a>
+<h1>{{order.code}}</h1>
+<p>{{order.track_code}}</p>
+<p>{{order.status}}</p>
+<p>{{order.comment}}</p>
+<p>{{order.address}}</p>
+<p>The order has been created {{order.created|timesince}} ago</p>
+
+<div class="order-wrapper">
+    <h2>{{items_count}} items in this order</h2>
+        {% for item in order_items %}
+            <hr>
+            <a href="{% url 'update-item' item.id %}">Edit</a>
+            <a href="{% url 'delete-item' item.id%}">Delete</a>
+            <p>{{item.category}}</p>
+            <p>{{item.name}}</p>
+            <p>{{item.description}}</p>
+            <p>{{item.link}}</p>
+            <p>{{item.weight}} {{item.metric_unit}}</p>
+            <p>{{item.quantity}}</p>
+        {% endfor %}
+    <a href="{% url 'add-items' order.id%}">Add item from order</a>
+</div>
+
+
+{% endif %}
+
+{% endblock %}

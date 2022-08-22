@@ -1,0 +1,98 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+
+  <section class="our-team">
+    <div class="container">
+      {% if user_type == 'customer' or user_type == 'buyer' %}
+      <!-- Couriers -->
+      <div class="row">
+        <div class="col-lg-6 offset-lg-3">
+          <div class="section-heading">
+            <h4>Couriers</h4>
+          </div>
+        </div>
+        <div class="col-lg-10 offset-lg-1">
+          <div class="naccs">
+            <div class="tabs">
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="menu">
+                    {% for courier in couriers %}
+                    <div>
+                      <img src="{{courier.profile.photo.url}}" alt="">
+
+                      <h4> <a href="{% url 'profile' courier.id %}" >{{courier.username}}</a> </h4>
+                      <!-- {% if courier.profile.phone %}
+                      <span>{{courier.profile.phone}}</span>
+                      {% endif %}
+                      {% if courier.profile.whatsapp %}
+                      <span>{{courier.profile.whatsapp}}</span>
+                      {% endif %} -->
+
+                      <span>delivered: {{courier.profile.delivered}}</span>
+                      <span>delivering: {{courier.profile.delivering}}</span>
+
+                      <!-- {% if user_type == 'buyer' %}
+                      <a href="{% url 'delete-courier' courier.id %}">Delete</a>
+                      {% endif %} -->
+                    </div>
+                    {% endfor %}
+  
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {% endif %}
+      {% if user_type == 'courier' or user_type == 'buyer' %}
+      <!-- Customers -->
+      <div class="row">
+        <div class="col-lg-6 offset-lg-3">
+          <div class="section-heading">
+            <h4>Customers</h4>
+          </div>
+        </div>
+        <div class="col-lg-10 offset-lg-1">
+          <div class="naccs">
+            <div class="tabs">
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="menu">
+                    {% for customer in customers %}
+                    <div>
+                      <img src="{{customer.profile.photo.url}}" alt="">
+                      <h4> <a href="{% url 'profile' customer.id %}" >{{customer.username}}</a> </h4>
+                      <!-- {% if customer.profile.phone %}
+                      <span>📞 {{customer.profile.phone}}</span>
+                      {% endif %}
+                      {% if customer.profile.whatsapp %}
+                      <span>🟢 {{customer.profile.whatsapp}}</span>
+                      {% endif %} -->
+
+                      <span>in progress: {{customer.profile.in_progress}}</span>
+                      <span>recieved: {{customer.profile.recieved}}</span>
+
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {% endif %}
+    </div>
+  </section>
+
+
+
+  
+{% endblock content %}

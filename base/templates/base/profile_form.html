@@ -1,0 +1,62 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<section class="contact-us our-office featured-product">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-3">
+          </div>
+        <div class="col-lg-6">
+          <div class="right-info">
+            <div class="row">
+                <form id="contact" action="" enctype="multipart/form-data" method="POST">
+                    {% csrf_token %}
+                  <div class="row">
+                    <div class="col-lg-12">
+                        <div class="section-heading">
+                        <h4>Edit Profile</h4> 
+                        </div>
+                            {{user_form.as_p}}
+                            {{profile_form.as_p}}
+
+                            <!-- <fieldset>
+                              {{user_form.username}}
+                            </fieldset>
+                     
+                            <fieldset>
+                              {{user_form.email}}
+                            </fieldset> -->
+
+                            <!-- <fieldset>
+                              {{profile_form.phone}}
+                            </fieldset>
+                       
+                            <fieldset>
+                              {{profile_form.whatsapp}}
+                            </fieldset> -->
+                       
+                            <!-- <fieldset>
+                              {{profile_form.photo}}
+                            </fieldset>
+                         -->
+                        <!-- {{user_form.as_p}} -->
+                        
+                    </div>
+                    <fieldset>
+                        <button type="submit" id="form-submit" name="submit" class="main-button-gradient">Save changes</button>
+                    </fieldset>
+                  </div>
+                </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-3">
+        </div>
+
+
+      </div>
+    </div>
+</section>
+
+{% endblock content %}

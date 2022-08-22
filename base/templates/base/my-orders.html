@@ -1,0 +1,163 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<section class="contact-us our-office featured-product">
+    <div class="container">
+      <div class="row">
+        <!-- ***** Summary Area ***** -->
+        <div class="col-lg-4">
+          <div class="left-info">
+            <div class="section-heading">
+                <!-- ***** SearchBar Start ***** -->
+                <form method="GET" action="{% url 'my-orders' %}">
+                    <input type="text" name="q" placeholder="Search Orders..."/>
+                </form>
+                <!-- ***** SearchBar End ***** -->
+                {% if orders_count == 1 %}
+                <h4>You have {{orders_count}} order</h4>
+                {% else %}
+                <h4>You have {{orders_count}} orders</h4>
+                {% endif %}
+                {% if user_type == 'customer' %}
+                <div class="main-button-gradient">
+                    <a href="{% url 'create-order' %}">Create order</a>
+                </div>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+        <!-- ***** Summary Area End ***** -->
+         <!-- ***** Orders Area ***** -->
+        <div class="col-lg-6 align-self-center">
+            <div class="right-info">
+              {% for order in orders %}
+           
+              <div class="col-lg-12">
+                <div class="help1">
+                <div class="info-item1">
+                
+                  <div class="icon">
+                    {% if order.courier and order.status == 'delivering'%}
+                    <p>{{order.status}}    by {{order.courier.username}} </p>
+                    {% else %}
+                    <span>{{order.status}}</span>
+                    {% endif %}
+                    
+                    <!-- < src="assets/images/service-icon-01.png" alt=""> -->
+                  </div>
+
+                      <h5 class="username"><a href="{% url 'order' order.id %}" style="color: #dc8cdb;">{{order.code}}</a>
+                        {% if not user_type == 'customer' %} 
+                        {% if order.customer %}
+                        
+                        <a href="{% url 'profile' order.customer.id %}">@{{order.customer.username}}</a>
+                        {% else %}
+                        <span>@customer deleted</span>
+                        {% endif %}
+                        {% endif %}
+                      </h5> 
+                      
+                      <!-- <span>delivery day: ~ {{order.delivery_day}}</span> -->
+                    <div class="customeritems">
+                      <div class="btnss">
+                      {% if user_type == 'customer' %} 
+                       
+                      <!-- ***** Button ***** -->
+                        {% if order.payment_method == 'cash' and order.status == 'paid' or order.payment_method == 'card' and order.status == 'delivering' %}
+                        <div class="main-button-gradient2" >
+                          <a href="{% url 'change-status' order.id %}">Recived</a>
+                        </div>
+                        {% endif %}
+
+                      {% elif user_type == 'courier' %}
+                        {% if order.status == 'arrived' %}
+                        <div class="main-button-gradient2" >
+                          <a href="{% url 'change-status' order.id %}">Take Order</a>
+                        </div>
+                        {% else %}
+                          <div class="main-button-gradient2" >
+                          <a href="{% url 'change-status' order.id %}">Paid</a>
+                        </div>
+                        {% endif %}
+
+                      {% elif user_type == 'buyer' %}
+                        {% if order.status == 'ready' %}
+                          {% if order.payment_method == 'cash' %}
+                          <div class="main-button-gradient2" >
+                            <a href="{% url 'change-status' order.id %}">Shipped</a>
+                          </div>
+                          {% else %}
+                          <div class="main-button-gradient2" >
+                            <a href="{% url 'change-status' order.id %}">Paid</a>
+                          </div>                         
+                          {% endif %}
+                        {% elif order.status == 'paid' %}
+                        <div class="main-button-gradient2" >
+                          <a href="{% url 'change-status' order.id %}">Shipped</a>
+                        </div>
+                        {% elif order.status == 'shipped' %}
+                        <div class="main-button-gradient2" >
+                          <a href="{% url 'change-status' order.id %}">Arrived</a>
+                        </div>
+                        {% endif %}
+
+                      {% endif %}
+  </div>
+  <div class="fff">
+  <div>
+
+    
+    <small class="list">ITEMS:</small>
+  
+  </div>
+  <div class="nameitems">
+                      {% for item in order_items %}
+                      <div>
+                          {% if item.order == order %}
+                          <small>{{item.name}}</small>
+                          {% endif %}
+                      </div>  
+                      {% endfor %}
+                    </div>
+                  </div>
+                    <div class="dates" style="font-size: 13px;">  updated: {{order.updated|date:'y-m-d'}}<br>created: {{order.created|date:'y-m-d'}} </div>
+                    </div>
+                    <div class="bottom-content">
+                      {% if user_type == 'customer' %} 
+                        {% if order.status == 'new' or order.status == 'ready' %}
+                        <a href="{% url 'delete-order' order.id %}" class="del"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                          <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                          <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                        </svg></a>
+                        {% endif %}
+                      {% endif %}
+                      <!-- ***** Button ***** -->
+                       
+
+                    
+                        
+
+                      
+                       
+
+                    
+                      
+</div>
+                      
+                      
+                  
+                </div>
+              </div>
+              </div> 
+              {% endfor %}           
+            </div>
+          </div>
+        <!-- ***** Orders Area End ***** -->
+      </div>
+    </div>
+  </section>
+
+{% endblock %}

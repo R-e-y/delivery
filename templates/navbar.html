@@ -1,0 +1,71 @@
+  {% load static %}
+  <!-- ***** Header Area Start ***** -->
+  <header class="header-area header-sticky">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="main-nav">
+                    <!-- ***** Logo Start ***** -->
+                    <a href="{% url 'home' %}" class="logo">
+                        <img src="{% static 'assets/images/delivery.png' %}" alt="DeliveryApp">
+                    </a>
+                    <!-- ***** Logo End ***** -->
+                    <!-- ***** Menu Start ***** -->
+                    <ul class="nav">
+                        
+                        <li><a href="{% url 'home' %}">Quick guide</a></li>
+                        <!-- <li><a href="#">Exchange</a></li> -->
+                        <li><a href="{% url 'about-us' %}">About us</a></li> 
+                        <!-- ***** Logged in ***** -->
+                        {% if request.user.is_authenticated %}
+                            {% if request.user.groups.all.0.name == 'customer' %}
+                            <li><a href="{% url 'members' %}">Couriers</a></li>
+                            {% elif request.user.groups.all.0.name == 'courier' %}
+                            <li><a href="{% url 'members' %}">Customers</a></li>
+                            {% elif request.user.groups.all.0.name == 'buyer' %}
+                            <li><a href="{% url 'members' %}">Customers & Couriers</a></li>
+                            <li><a href="{% url 'reports' %}">Reports</a></li>
+                            {% endif %}
+                        <li><a href="{% url 'my-orders' %}">My orders</a></li> 
+                        <li class="has-sub">
+                            <a href="javascript:void(0)">{{request.user.username}}</a>
+                            <ul class="sub-menu">
+                                <!-- make conditional based on role  -->
+                                <li><a href="{% url 'profile' request.user.id %}">Profile</a></li>
+                                <li><a href="{% url 'logout' %}">Log out</a></li>
+                            </ul>
+                        </li>
+                        <!-- ***** Not Logged in ***** -->
+                        {% else %}
+                        <li><a href="{% url 'login' %}">Log in</a></li> 
+                        {% endif %}
+
+                    </ul>        
+                    <a class='menu-trigger'>
+                        <span>Menu</span>
+                    </a>
+                    <!-- ***** Menu End ***** -->
+                </nav>
+            </div>
+        </div>
+    </div>
+    {% include 'messages.html' %}
+</header>
+<!-- ***** Header Area End ***** -->
+
+
+
+<!-- <a href="/">
+    <h1>LOGO</h1>
+</a>
+
+<form method="GET" action="{% url 'home' %}">
+    <input type="text" name="q" placeholder="Search Items..."/>
+</form> -->
+
+<!-- {% if request.user.is_authenticated %}
+<p>Hello {{user.username}}!</p>
+<a href="{% url 'logout' %}">Log out</a>
+{% else %}
+<a href="{% url 'login' %}">Log in</a>
+{% endif %} -->

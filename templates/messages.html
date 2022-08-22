@@ -1,0 +1,22 @@
+{% if messages %}
+    {% for message in messages %}
+    <div class="alert {{ message.tags }} m-2" id="msg" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+{% endif %}
+
+<!-- {% block scripts %}
+<script>
+   
+    setTimeout(function(){
+        alert ($msg.lenght);
+        if ($('#msg').lenght > 0) {
+           alert ("`yyeee");
+        }
+    }, 2000)
+
+ 
+</script>
+
+{% endblock %} -->

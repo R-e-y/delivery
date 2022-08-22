@@ -1,0 +1,31 @@
+<!-- create/update items -->
+
+{% extends 'main.html' %}
+
+{% block content %}
+
+<div>
+    <h2>Order detailssss</h2>
+    
+    <p>newly created order code {{order.code}}</p>
+    {% for item in order_items %}
+    <p>{{item.name}}</p>
+    {% endfor %}
+</div>
+
+
+<div>
+    <form method="POST" action="">
+        {% csrf_token %}
+        <div>
+            <!-- as_p wraps a paragraph tag around every input field -->
+            <h1>Add items to the order</h1>
+            {{form.as_p}}
+        </div>
+
+        <input type="submit" name="add" value="Add item from items_form"/>
+        <input type="submit" name="submit" value="Submit"/>
+    </form>
+</div>
+
+{% endblock content %}

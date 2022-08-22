@@ -1,0 +1,85 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<style>
+    .home-container{
+        display: grid;
+        grid-template-columns: 1fr 1fr 2fr;
+    }
+</style>
+
+<div class="home-container">
+
+
+    <!-- Categories Panel -->
+    <div>
+        <h3>Browse Categories</h3>
+        <hr>
+       
+        <div>
+            <a href="{% url 'home' %}" >All</a>
+        </div>
+
+        {% for category in categories %}
+            <div>
+                <!-- '?q' adds a parameter to request url -->
+                <a href="{% url 'home' %}?q={{category.name}}" >{{category.name}}</a>
+            </div>   
+        {% endfor %}
+
+    </div>
+
+
+    <!-- Items Panel -->
+    <div>
+
+        {% for item in items %}
+            <div>
+                
+                <h5>{{item.id}} -- <a href="{% url 'item' item.id %}">{{item.name}}</a></h5>  
+                <span>{{item.category.name}}</span>
+
+                <hr>
+            </div>  
+        {% endfor %}
+
+    </div>
+
+
+    <!-- Order Panel -->
+    <div>
+        <h5>You have {{orders_count}} orders</h5>
+        <a href="{% url 'create-order' %}">Create order</a>
+
+        <div>
+            <!-- double curl brackets - accessing to 'order' attributes -->
+            {% for order in orders %}
+                <div>
+                    {% if request.user == order.customer %}
+                    <a href="{% url 'delete-order' order.id %}">Delete</a>
+                    {% endif %}
+                    <span>@{{order.customer.username}}</span>
+                    <h5>{{order.id}} -- <a href="{% url 'order' order.id %}">{{order.code}}</a></h5>  
+
+                    {% for item in order_items %}
+                        <div>
+                            {% if item.order == order %}
+                                <small>{{item.name}}</small>
+                            {% endif %}
+                        </div>  
+                    {% endfor %}
+
+                    <hr>
+                </div>
+            {% endfor %}
+            
+        </div>
+
+    </div>
+
+    
+
+</div>
+
+{% endblock %}

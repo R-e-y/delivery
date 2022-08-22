@@ -1,0 +1,154 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+
+{% if request.user.is_authenticated %}
+<section class="contact-us our-office featured-product">
+  <div class="container">
+    <div class="row">
+      <!-- ***** Summary Area ***** -->
+      <div class="col-lg-4">
+        <div class="left-info">
+          <div class="section-heading">
+            
+              <h4>Order Details</h4>
+              {% if order.track_code %}
+              <p class="big">{{order.track_code}}</p>
+              {% endif %}
+
+              {% if items_count == 1 %}
+              <p class="big">{{items_count}} item in this order</p>
+              {% else %}
+              <p class="big">{{items_count}} items in this order</p>
+              {% endif %}
+
+              <p class="big"><span>ORDER: </span>{{order.code}}</p>
+              <p><span>STATUS: </span>{{order.status}}</p>
+              {% if order.address %}
+              <p><span>ADDRESS: </span>{{order.address}}</p>
+              {% endif %}
+              {% if order.comment%}
+              <p><span>COMMENT: </span>{{order.comment}}</p>
+              {% endif %}
+              {% if order.filled %}
+              <p><span>DELIVERY DAY: ~ </span>{{order.delivery_day}}</p>
+              <p><span>COST: </span>{{order.cost}} {{order.currency}}</p>
+              <p><span>DELIVERY COST: </span>{{order.delivery_cost}} {{order.currency}}</p>
+                {% if user_type == 'buyer' %}
+                  <p><span>MARGIN: </span>{{order.margin}} {{order.currency}}</p>
+                {% endif %}
+              <p><span>TOTAL COST: </span>{{order.total_cost}} {{order.currency}}</p>
+              {% endif %}
+              <p><span>PAYMENT METHOD: </span>{{order.payment_method}}</p>
+              <p><span>CREATED: </span>{{order.created}}</p>
+             
+
+              {% if order.status == 'new' or order.status == 'ready' %}
+                {% if request.user == order.customer or user_type == 'buyer' %}
+                  <div class="main-button-gradient">
+                        <a href="{% url 'update-order' order.id %}">Edit order</a><br>
+                    </div>
+                    {% if not user_type == 'buyer' %}
+                    <div class="main-button-gradient">
+                      <a href="{% url 'add-items' order.id %}">Add Item</a>
+                    </div>
+                    {% endif %}
+                  {% endif %}
+                {% endif %}
+                
+            </div>
+          </div>
+        </div>
+        <!-- ***** Summary Area End ***** -->
+        <!-- ***** Items Area ***** -->
+        
+
+        <div class="col-lg-6 align-self-center">
+            <div class="right-info">
+              <div class="info-item2">
+              <div class="parcels-widget-wrap">
+                <iframe class="parcels-widget" src="https://parcelsapp.com/widget?trackingNumber={{order.track_code}} " frameborder="no" seamless></iframe>
+            </div>
+          </div>
+              {% for item in order_items %}
+              <div class="col-lg-12">
+                <div class="info-item">
+                  <div>
+                    <p>{{item.category}}</p>
+                    <p class="bold">{{item.name}}</p>
+                    <p>{{item.description}}</p>
+                    <a href="{{item.link}}">{{item.link}}</a>
+                    {% if item.cost %}
+                    <p>{{item.cost}} {{item.currency}}</p>
+                    {% endif %}
+                    {% if item.weight %}
+                    <p>{{item.weight}} {{item.metric_unit}}</p>
+                    {% endif %}
+                    <p>{{item.quantity}} pcs</p>
+<div class="zhn">
+                    {% if order.status == 'new' or order.status == 'ready' %}
+                      {% if request.user == order.customer or user_type == 'buyer' %}
+                      <!-- <div class="main-button-gradient"><span><a href="{% url 'update-item' item.id %}">Edit</a></span></div> -->
+                      <a href="{% url 'update-item' item.id %}">Edit</a>
+                        {% if not user_type == 'buyer' %}
+                        
+                        <!-- <div class="main-button-gradient">
+                        <span class="last-span"><a href="{% url 'delete-item' item.id%}">Delete</a></span></div> -->
+                        <a href="{% url 'delete-item' item.id%}">Delete</a>
+                        {% endif %}
+                      {% endif %}
+                    {% endif %}
+                  </div>
+                  </div>
+                  
+                </div>
+              </div> 
+              {% endfor %}  
+                     
+            </div>
+          </div>
+
+        <!-- RR095897325RU -->
+      <!-- ***** Items Area End ***** -->
+      <!-- *****  ParcelApp.com widget ***** -->
+     
+      
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}
+
+
+
+<!-- 
+
+{% if request.user.is_authenticated %}
+<a href="{% url 'update-order' order.id %}">Edit</a>
+<h1>{{order.code}}</h1>
+<p>{{order.track_code}}</p>
+<p>{{order.status}}</p>
+<p>{{order.comment}}</p>
+<p>{{order.address}}</p>
+<p>The order has been created {{order.created|timesince}} ago</p>
+
+<div class="order-wrapper">
+    <h2>{{items_count}} items in this order</h2>
+        {% for item in order_items %}
+            <hr>
+            <a href="{% url 'update-item' item.id %}">Edit</a>
+            <a href="{% url 'delete-item' item.id%}">Delete</a>
+            <p>{{item.category}}</p>
+            <p>{{item.name}}</p>
+            <p>{{item.description}}</p>
+            <p>{{item.link}}</p>
+            <p>{{item.weight}} {{item.metric_unit}}</p>
+            <p>{{item.quantity}}</p>
+        {% endfor %}
+    <a href="{% url 'add-items' order.id%}">Add item from order</a>
+</div>
+
+
+{% endif %} -->

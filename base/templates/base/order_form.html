@@ -1,0 +1,94 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<section class="contact-us" id="contact-section">
+    <div class="container">
+      <div class="row">
+
+        <div class="col-lg-6">
+          <form id="contact" action="" method="POST">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="section-heading">
+                  <h4>Fill order details</h4>       
+                </div>
+              </div>
+              {{form.as_p}}
+
+              <!-- <div class="col-lg-12">
+                <fieldset>
+                  {{form.code}}
+                </fieldset>
+              </div> 
+              <div class="col-lg-12">
+                <fieldset>
+                  {{form.track_code}}
+                </fieldset>
+              </div> -->
+              <!-- <div class="col-lg-12">
+                <fieldset>
+                  {{form.address}}
+                </fieldset>
+              </div>
+              <div class="col-lg-12">
+                <fieldset>
+                  {{form.comment}}
+                </fieldset>
+              </div> -->
+
+              <!-- <div class="col-lg-12">
+                <fieldset>
+                  {{form.delivery_day}}
+                </fieldset>
+              </div>
+              <div class="col-lg-12">
+                <fieldset>
+                  {{form.cost}}
+                </fieldset>
+              </div>
+              <div class="col-lg-12">
+                <fieldset>
+                  {{form.delivery_cost}}
+                </fieldset>
+              </div> -->
+              <!-- <div class="col-lg-12">
+                <fieldset>
+                  {{form.payment_method}}
+                </fieldset>
+              </div> -->
+              <!-- <div class="col-lg-12">
+                <fieldset>
+                  {{form.currency}}
+                </fieldset>
+              </div> -->
+              <div class="col-lg-12">
+                <fieldset>
+                    <button type="submit" id="form-submit" class="main-gradient-button">Submit</button>
+                </fieldset>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+{% endblock content %}
+
+
+
+
+<!-- <div>
+    <form method="POST" action="">
+        {% csrf_token %}
+        <div>
+
+            <h1>Fill order details</h1>
+            {{form.as_p}}
+        </div>
+
+        <input type="submit" value="Add item from order_form"/>
+    </form>
+</div> -->

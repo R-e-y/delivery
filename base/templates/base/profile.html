@@ -1,0 +1,71 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+
+<!-- ***** Customer & Courier Profile Start ***** -->
+  <section class="our-team help">
+    <div class="container">
+      <div class="row">
+        <div class="hellp">
+        <div class="col-lg-6 offset-lg-3">
+          <div class="section-heading">
+            <h4>Profile</h4>
+          </div>
+        </div>
+        <div class="col-lg-10 offset-lg-1">
+          <div class="naccs">
+            <div class="tabs">
+              <div class="row">
+                <div class="col-lg-12">
+                  <ul class="nacc">
+                    <li class="active">
+                      <div>
+                        <div class="left-content">
+                          <h4>{{user.username}}</h4>
+                          <p><em>email: </em>{{user.email}}</p>
+                         
+                          <p><em>phone: </em>{{user.profile.phone}}</p>
+                         
+                          <p><em>whatsapp: </em>{{user.profile.whatsapp}}</p>
+                       
+                          {% if user == request.user %}
+                            <span><a href="{% url 'update-profile' %}">Edit</a></span>
+                            {% if user_type == 'buyer' %}
+                            <span><a href="{% url 'delete-profile' user.id %}">Delete account</a></span>
+                            <span class="last-span"><a href="{% url 'register' %}">Register a courier</a></span>
+                            {% elif user_type == 'customer' %}
+                            <span class="last-span"><a href="{% url 'delete-profile' user.id%}">Delete account</a></span>
+                            {% endif %}
+                          {% elif user_type == 'buyer' and user.groups.all.0.name == 'courier' %}
+                            <span class="last-span"><a href="{% url 'delete-profile' user.id %}">Delete courier</a></span>
+                          {% endif %}
+                        </div>
+                        <div class="right-image">
+                          <img src="{{user.profile.photo.url}}" alt="">
+                        </div
+                        
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
+<!-- ***** Profile Photo End ***** -->
+<!-- ***** Profile Details Start ***** -->
+<!-- <div class="col-lg-6 offset-lg-3">
+    <div class="section-heading">
+      <h6>OUR COURSES</h6>
+      <h4>What You Can <em>Learn</em></h4>
+      <p>You just think about TemplateMo whenever you need free CSS templates for your business website</p>
+    </div>
+  </div> -->
+<!-- ***** Profile Details End ***** -->
+
+
+{% endblock content %}
