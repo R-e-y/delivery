@@ -403,6 +403,7 @@ def myOrders(request):
 
 @login_required(login_url='login') 
 def myOrdersCompleted(request):
+    order_type = 'completed'
     user_type = request.user.groups.all()[0].name
 
     q1 = q2 = Q()
@@ -432,7 +433,8 @@ def myOrdersCompleted(request):
         'user_type': user_type,
         'orders': orders, 
         'orders_count': orders_count, 
-        'order_items': order_items
+        'order_items': order_items,
+        'order_type': order_type
         }
     return render(request, 'base/my-orders.html', context) # using template
 
