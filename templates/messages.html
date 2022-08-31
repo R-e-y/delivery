@@ -1,7 +1,18 @@
 {% if messages %}
     {% for message in messages %}
-    <div class="alert {{ message.tags }} m-2" id="msg" role="alert">
-        {{ message }}
+    <script language="JavaScript">
+       setTimeout(() => {
+  const box = document.getElementById('msg');
+
+  // 👇️ removes element from DOM
+  box.style.display = 'none';
+
+  // 👇️ hides element (still takes up space on page)
+  // box.style.visibility = 'hidden';
+}, 2000);
+        </script>
+    <div class="alert {{ message.tags }}" id="msg" role="alert" style="margin-top:20px;margin-left: 30px;">
+        {{message}}
     </div>
     {% endfor %}
 {% endif %}

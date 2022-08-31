@@ -35,7 +35,7 @@
             <div class="right-info">
               {% for order in orders %}
            
-              <div class="col-lg-12">
+              
                 <div class="help1">
                 <div class="info-item1">
                 
@@ -48,7 +48,15 @@
                     
                     <!-- < src="assets/images/service-icon-01.png" alt=""> -->
                   </div>
-
+                  {% if user_type == 'buyer' and order.consult == 1 %}
+                  <span class="icon_consult">
+                    <!-- < src="assets/images/service-icon-01.png" alt=""> -->
+                  </span>
+                  {% else %}
+                  <span class="icon_noConsult">
+                    <!-- < src="assets/images/service-icon-01.png" alt=""> -->
+                  </span>
+                  {% endif %}
                       <h5 class="username"><a href="{% url 'order' order.id %}" style="color: #dc8cdb;">{{order.code}}</a>
                         {% if not user_type == 'customer' %} 
                         {% if order.customer %}
@@ -132,6 +140,30 @@
                           <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
                           <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                         </svg></a>
+
+                        <button id="delete" name="delete" onclick="onDelete()" >Delete</button>
+    <div id="confirmation" class="modal-container">
+      <div class="modal-noti">
+        
+          <div class="modal-header">
+            <span onclick="onCancel()">&times;</span>
+            <h2>Are you sure you want to delete? {{obj}}</h2>
+          </div>
+          <div class="modal-content">
+            <p>This action cannot be undone</p>
+          </div>
+          <div class="modal-footer">
+            <button class="modal-button" onclick="onCancel()">Cancel</button>
+            <button type="submit" id="form-submit" 
+              class="modal-button modal-confirm-button"
+              
+            >
+              Confirm
+            </button>
+          </div>
+        
+      </div>
+    </div>
                         {% endif %}
                       {% endif %}
                       <!-- ***** Button ***** -->
@@ -151,7 +183,7 @@
                   
                 </div>
               </div>
-              </div> 
+              
               {% endfor %}           
             </div>
           </div>

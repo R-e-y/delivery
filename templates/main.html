@@ -48,15 +48,36 @@
 
 
     <!-- Scripts -->
-    <!-- Bootstrap core JavaScript -->
     <script>
-        setTimeout(function(){
-            alert ($msg.lenght);
-            if ($('#msg').lenght > 0) {
-               alert ("`yyeee");
-            }
-        }, 2000)
-    </script>
+    function onDelete() {
+      let confirmation = document.getElementById("confirmation");
+      if (!confirmation.classList.contains("modal-open")) {
+        confirmation.classList.add("modal-open");
+      }
+      $.post('delete-order/'+105+'/');
+    }
+
+    function onCancel() {
+      let confirmation = document.getElementById("confirmation");
+      confirmation.classList.remove("modal-open");
+    }
+
+    
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document
+        .getElementById("confirmation")
+        .addEventListener("click", onCancel);
+      document
+        .querySelector(".modal")
+        .addEventListener("click", (e) => e.stopPropagation());
+    });
+
+
+</script>
+
+    <!-- Bootstrap core JavaScript -->
     <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
     <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 
