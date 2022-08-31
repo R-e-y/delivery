@@ -26,7 +26,14 @@
                             <li><a href="{% url 'members' %}">Customers & Couriers</a></li>
                             <li><a href="{% url 'reports' %}">Reports</a></li>
                             {% endif %}
-                        <li><a href="{% url 'my-orders' %}">My orders</a></li> 
+                        <li class="has-sub">
+                            <a href="javascript:void(0)">My Orders</a>
+                            <ul class="sub-menu">
+                                <!-- make conditional based on role  -->
+                                <li><a href="{% url 'my-orders' %}">In progress</a></li>
+                                <li><a href="{% url 'my-orders-completed' %}">Completed</a></li>
+                            </ul>
+                        </li>
                         <li class="has-sub">
                             <a href="javascript:void(0)">{{request.user.username}}</a>
                             <ul class="sub-menu">

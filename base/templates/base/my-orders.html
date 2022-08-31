@@ -14,6 +14,7 @@
                 <!-- ***** SearchBar Start ***** -->
                 <form method="GET" action="{% url 'my-orders' %}">
                     <input type="text" name="q" placeholder="Search Orders..."/>
+                    <span>by status, code, customer and date created</span>
                 </form>
                 <!-- ***** SearchBar End ***** -->
                 {% if orders_count == 1 %}

@@ -26,6 +26,7 @@ urlpatterns = [
 # Order urls -------------------------------------------------------------------------------------------------------
     
     path('my-orders/', views.myOrders, name="my-orders"),
+    path('my-orders-completed/', views.myOrdersCompleted, name="my-orders-completed"),
     path('order/<str:pk>/', views.order, name="order"),
     path('create-order/', views.createOrder, name="create-order"),
     path('update-order/<str:pk>/', views.updateOrder, name="update-order"),

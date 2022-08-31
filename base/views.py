@@ -356,9 +356,6 @@ def updateProfile(request):
 def deleteProfile(request, pk):
     user = User.objects.get(id=pk)
 
-    # if request.user != order.customer:
-    #     return HttpResponse('You are not allowed here!')
-
     if request.method == 'POST':
         user.delete()
         return redirect('register', user_type='customer')
@@ -375,13 +372,11 @@ def myOrders(request):
 
     q1 = q2 = Q()
     if user_type == 'customer':
-        # orders = Order.objects.filter(customer = request.user)
-        q1 = Q(customer = request.user)
+        q1 = ~Q(status='recieved') & Q(customer = request.user)
     elif user_type == 'courier':
-        # orders = Order.objects.filter(Q(status='arrived') | Q(status='delivering'))
         q1 = Q(status='arrived') | Q(status='delivering') & Q(courier = request.user)
-    # else:
-    #     orders = Order.objects.all()
+    elif user_type == 'buyer':
+        q1 = ~Q(status='recieved')
 
     orders_count = Order.objects.filter(q1).count()
 
@@ -394,16 +389,6 @@ def myOrders(request):
             Q(created__icontains=q) |
             Q(customer__username__icontains=q) 
         )
-        # '__' (double undrscore) query upwards, to the parent, see in Models
-        # orders = Order.objects.filter(
-        #     Q(status__icontains=q) |
-        #     Q(code__icontains=q) |
-        #     Q(comment__icontains=q) |
-        #     Q(created__icontains=q) |
-        #     Q(customer__username__icontains=q) 
-        #     # Q(order_items__category__name__icontains=q)
-        #     ) 
-    # q3 = q1 & q2 if q2 is not None else q1
     orders = Order.objects.filter(q1 & q2)
     order_items = Item.objects.all()
     categories = Category.objects.all()
@@ -414,8 +399,44 @@ def myOrders(request):
         'orders_count': orders_count, 
         'order_items': order_items
         }
-    # return HttpResponse('Home page') # without templates
     return render(request, 'base/my-orders.html', context) # using template
+
+
+@login_required(login_url='login') 
+def myOrdersCompleted(request):
+    user_type = request.user.groups.all()[0].name
+
+    q1 = q2 = Q()
+    if user_type == 'customer':
+        q1 = Q(status='recieved') & Q(customer = request.user)
+    elif user_type == 'courier':
+        q1 = Q(status='recieved') & Q(courier = request.user)
+    elif user_type == 'buyer':
+        q1 = Q(status='recieved')
+
+    orders_count = Order.objects.filter(q1).count()
+
+    # searchbar
+    if request.GET.get('q') != None:
+        q = request.GET.get('q')  
+        q2 = (
+            Q(status__icontains=q) |
+            Q(code__icontains=q) |
+            # Q(item_set__name__icontains=q) |
+            Q(created__icontains=q) |
+            Q(customer__username__icontains=q) 
+        )
+ 
+    orders = Order.objects.filter(q1 & q2)
+    order_items = Item.objects.all()
+    context = {
+        'user_type': user_type,
+        'orders': orders, 
+        'orders_count': orders_count, 
+        'order_items': order_items
+        }
+    return render(request, 'base/my-orders.html', context) # using template
+
 
 
 @login_required(login_url='login')
