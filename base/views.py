@@ -385,6 +385,7 @@ def myOrders(request):
             Q(status__icontains=q) |
             Q(code__icontains=q) |
             Q(created__icontains=q) |
+            Q(pk__in=[x.order.pk for x in Item.objects.filter(name=q)])|
             Q(customer__username__icontains=q) 
         )
     orders = Order.objects.filter(q1 & q2)
@@ -421,7 +422,7 @@ def myOrdersCompleted(request):
         q2 = (
             Q(status__icontains=q) |
             Q(code__icontains=q) |
-            # Q(__itemcontains=q) |
+            Q(pk__in=[x.order.pk for x in Item.objects.filter(name=q)])|
             Q(created__icontains=q) |
             Q(customer__username__icontains=q) 
         )
