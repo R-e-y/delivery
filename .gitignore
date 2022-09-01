@@ -1,13 +1,4 @@
-# + means updated index (ignored)
-# Django #
-# \*.log/ correct syntax for *
-*.log +  
-*.pot +
-*.pyc +
-__pycache__ +
-db.sqlite3 +
-media +
-.DS_Store +
-
-# Backup files # 
-*.bak +
+base/migrations
+base/__pycache__
+__pycache__
+db.sqlite3
