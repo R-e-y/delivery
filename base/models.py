@@ -44,14 +44,6 @@ class Category(models.Model):
 
 
 class Order(models.Model):
-
-    # class Status(models.TextChoices):
-    #     NEW = 'new', _('new')
-    #     UNPAID = 'unpaid', _('unpaid')
-    #     PAID = 'paid', _('paid')
-    #     SHIPPED = 'shipped', _('shipped')
-    #     DELIVERING = 'delivering', _('delivering')
-    #     RECIEVED = 'recieved', _('recieved')
     
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     courier = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='couriers')
@@ -71,6 +63,7 @@ class Order(models.Model):
             default='new'
         )
     # tracker = 
+    # consult = models.BooleanField(default=1)
     address = models.CharField(max_length=100) # delivery address (home) 
     comment = models.TextField(null=True, blank=True)
     delivery_day = models.DateField(null=True, blank=True) 
@@ -88,9 +81,6 @@ class Order(models.Model):
     
     @property
     def total_cost(self):
-        # self.cost = 0 if not self.cost else self.cost
-        # self.delivery_cost = 0 if not self.delivery_cost else self.delivery_cost
-        # self.margin = 0 if not self.margin else self.margin
         return self.cost + self.delivery_cost + self.margin
 
     # True if these fields are filled

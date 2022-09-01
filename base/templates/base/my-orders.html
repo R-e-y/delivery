@@ -12,8 +12,13 @@
           <div class="left-info">
             <div class="section-heading">
                 <!-- ***** SearchBar Start ***** -->
+                {% if order_type == 'completed' %}
+                <form method="GET" action="{% url 'my-orders-completed' %}">
+                {% else %}
                 <form method="GET" action="{% url 'my-orders' %}">
+                {% endif %}
                     <input type="text" name="q" placeholder="Search Orders..."/>
+                    <span>by status, code, customer, items and date created</span>
                 </form>
                 <!-- ***** SearchBar End ***** -->
                 {% if orders_count == 1 %}

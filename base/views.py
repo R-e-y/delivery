@@ -356,9 +356,6 @@ def updateProfile(request):
 def deleteProfile(request, pk):
     user = User.objects.get(id=pk)
 
-    # if request.user != order.customer:
-    #     return HttpResponse('You are not allowed here!')
-
     if request.method == 'POST':
         user.delete()
         return redirect('register', user_type='customer')
@@ -370,18 +367,15 @@ def deleteProfile(request, pk):
 
 @login_required(login_url='login') 
 def myOrders(request):
-    # q is whatever we pass to url from html
     user_type = request.user.groups.all()[0].name
-
+    Order.objects.exclude(pk__in=[x.order.pk for x in Item.objects.all()]).delete()
     q1 = q2 = Q()
     if user_type == 'customer':
-        # orders = Order.objects.filter(customer = request.user)
-        q1 = Q(customer = request.user)
+        q1 = ~Q(status='recieved') & Q(customer = request.user)
     elif user_type == 'courier':
-        # orders = Order.objects.filter(Q(status='arrived') | Q(status='delivering'))
         q1 = Q(status='arrived') | Q(status='delivering') & Q(courier = request.user)
-    # else:
-    #     orders = Order.objects.all()
+    elif user_type == 'buyer':
+        q1 = ~Q(status='recieved')
 
     orders_count = Order.objects.filter(q1).count()
 
@@ -390,20 +384,10 @@ def myOrders(request):
         q2 = (
             Q(status__icontains=q) |
             Q(code__icontains=q) |
-            # Q(comment__icontains=q) |
             Q(created__icontains=q) |
+            Q(pk__in=[x.order.pk for x in Item.objects.filter(name=q)])|
             Q(customer__username__icontains=q) 
         )
-        # '__' (double undrscore) query upwards, to the parent, see in Models
-        # orders = Order.objects.filter(
-        #     Q(status__icontains=q) |
-        #     Q(code__icontains=q) |
-        #     Q(comment__icontains=q) |
-        #     Q(created__icontains=q) |
-        #     Q(customer__username__icontains=q) 
-        #     # Q(order_items__category__name__icontains=q)
-        #     ) 
-    # q3 = q1 & q2 if q2 is not None else q1
     orders = Order.objects.filter(q1 & q2)
     order_items = Item.objects.all()
     categories = Category.objects.all()
@@ -414,16 +398,51 @@ def myOrders(request):
         'orders_count': orders_count, 
         'order_items': order_items
         }
-    # return HttpResponse('Home page') # without templates
     return render(request, 'base/my-orders.html', context) # using template
+
+
+@login_required(login_url='login') 
+def myOrdersCompleted(request):
+    order_type = 'completed'
+    user_type = request.user.groups.all()[0].name
+
+    q1 = q2 = Q()
+    if user_type == 'customer':
+        q1 = Q(status='recieved') & Q(customer = request.user)
+    elif user_type == 'courier':
+        q1 = Q(status='recieved') & Q(courier = request.user)
+    elif user_type == 'buyer':
+        q1 = Q(status='recieved')
+
+    orders_count = Order.objects.filter(q1).count()
+
+    # searchbar
+    order_items = Item.objects.all()
+    if request.GET.get('q') != None:
+        q = request.GET.get('q')  
+        q2 = (
+            Q(status__icontains=q) |
+            Q(code__icontains=q) |
+            Q(pk__in=[x.order.pk for x in Item.objects.filter(name=q)])|
+            Q(created__icontains=q) |
+            Q(customer__username__icontains=q) 
+        )
+ 
+    orders = Order.objects.filter(q1 & q2)
+    context = {
+        'user_type': user_type,
+        'orders': orders, 
+        'orders_count': orders_count, 
+        'order_items': order_items,
+        'order_type': order_type
+        }
+    return render(request, 'base/my-orders.html', context) # using template
+
 
 
 @login_required(login_url='login')
 def order(request, pk):
-    # order = None
-    # for i in orders:
-    #     if i['id'] == int(pk):
-    #         order = i
+
     user_type = request.user.groups.all()[0].name
     order = Order.objects.get(id=pk)
     order_items = order.item_set.all() # .order_by(-created)
@@ -440,51 +459,19 @@ def order(request, pk):
 
 @login_required(login_url='login')
 def createOrder(request):
-    # print(Order.objects.latest('id').id)
-    # print(type(Order.objects.latest('id').id))
-    # txt = str(request.user.order_set.latest('id'))
-    # print (txt, type(txt))
-    # generated_code = [int(s) for s in txt.split() if s.isdigit()]
-    # print('gen:', generated_code, type(generated_code))
     generated_code = request.user.username.upper() + '_' + str(Order.objects.latest('id').id + 1)
     order = Order.objects.create(customer=request.user, code=generated_code)
-    # form = OrderForm(initial={'customer': request.user, 'code': generated_code})
-
-
-    # form.fields['code'].widget = forms.HiddenInput()
-    # form.fields['track_code'].widget = forms.HiddenInput()
-    # form.fields['delivery_day'].widget = forms.HiddenInput()
-    # form.fields['cost'].widget = forms.HiddenInput()
-    # form.fields['delivery_cost'].widget = forms.HiddenInput()
-    # form.fields['currency'].widget = forms.HiddenInput()
-
-    # if request.method == 'POST':
-    #     # if user_type == 'customer':
-    #     #     form = OrderCustomerForm(request.POST) # passing all the data into the forms
-    #     # else:
-    #     #     form = OrderBuyerForm(request.POST)
-    #     form = OrderForm(request.POST)
-    #     if form.is_valid():
-    #         order=form.save() # saves in db
-    #         return redirect('add-items', pk=order.id) 
-    #     else:
-    #         messages.error(request, 'Form is invalid')
-
-    # context={'form': form}
-    # return render(request, 'base/order_form.html', context)
     return redirect('add-items', pk=order.id)
 
 
 @login_required(login_url='login')
 def updateOrder(request, pk):
-    # order_btn = 'edit'
 
     order = Order.objects.get(id=pk)
     form = OrderForm(instance=order) # gets fields prefilled
     user_type = request.user.groups.all()[0].name
 
     if user_type == 'customer':
-        # form = OrderCustomerForm(initial={'customer': request.user, 'code': generated_code})
         form.fields['code'].widget = forms.HiddenInput()
         form.fields['track_code'].widget = forms.HiddenInput()
         form.fields['delivery_day'].widget = forms.HiddenInput()
@@ -493,17 +480,14 @@ def updateOrder(request, pk):
         form.fields['margin'].widget = forms.HiddenInput()
         form.fields['currency'].widget = forms.HiddenInput()
     else:
-        # form = OrderBuyerForm(initial={'customer': request.user, 'code': generated_code})
         form.fields['address'].widget = forms.HiddenInput()
         form.fields['payment_method'].widget = forms.HiddenInput()
-        # form.fields['comment'].widget = forms.HiddenInput()
 
     if request.method == 'POST':
         form = OrderForm(request.POST, instance=order) # specifying which order to update, otherwise new order will be created
         if form.is_valid():
             order = form.save()
             
-
             items_filled = 1
             for item in order.item_set.all():
                 if not item.filled:
@@ -525,9 +509,6 @@ def updateOrder(request, pk):
 @login_required(login_url='login')
 def deleteOrder(request, pk):
     order = Order.objects.get(id=pk)
-
-    # if request.user != order.customer:
-    #     return HttpResponse('You are not allowed here!')
 
     if request.method == 'POST':
         order.delete()
@@ -556,9 +537,6 @@ def addItems(request, pk):
         form = ItemForm(request.POST) 
         if form.is_valid():
             form.save() 
-            # if 'add' in request.POST:
-            #     return redirect('add-items', pk=order.id)
-            # elif 'submit' in request.POST:
             if order_items.count() == 1:
                 return redirect('update-order', pk=order.id) 
             else:
