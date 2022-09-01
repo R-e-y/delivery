@@ -26,7 +26,14 @@
                             <li><a href="{% url 'members' %}">Customers & Couriers</a></li>
                             <li><a href="{% url 'reports' %}">Reports</a></li>
                             {% endif %}
-                        <li><a href="{% url 'my-orders' %}">My orders</a></li> 
+                        <li class="has-sub">
+                            <a href="javascript:void(0)">My Orders</a>
+                            <ul class="sub-menu">
+                                <!-- make conditional based on role  -->
+                                <li><a href="{% url 'my-orders' %}">In progress</a></li>
+                                <li><a href="{% url 'my-orders-completed' %}">Completed</a></li>
+                            </ul>
+                        </li>
                         <li class="has-sub">
                             <a href="javascript:void(0)">{{request.user.username}}</a>
                             <ul class="sub-menu">
@@ -50,22 +57,7 @@
         </div>
     </div>
     {% include 'messages.html' %}
+
 </header>
 <!-- ***** Header Area End ***** -->
 
-
-
-<!-- <a href="/">
-    <h1>LOGO</h1>
-</a>
-
-<form method="GET" action="{% url 'home' %}">
-    <input type="text" name="q" placeholder="Search Items..."/>
-</form> -->
-
-<!-- {% if request.user.is_authenticated %}
-<p>Hello {{user.username}}!</p>
-<a href="{% url 'logout' %}">Log out</a>
-{% else %}
-<a href="{% url 'login' %}">Log in</a>
-{% endif %} -->
