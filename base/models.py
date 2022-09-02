@@ -35,12 +35,31 @@ class Profile(models.Model):
         return Order.objects.filter(status='delivering', courier=self.user).count()
 
 
-
 class Category(models.Model):
     name = models.CharField(max_length=200)
 
     def __str__(self):
         return self.name
+
+class Coupon(models.Model):
+    count = models.IntegerField(default=0)
+    customer = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.customer.username
+    
+    def increase(self, num=1):
+        if self.count == 10:
+            self.count = 0
+        else:
+            self.count += num
+        self.save()
+
+    def discount(self):
+        if self.count == 10:
+            return 0,5
+        else:
+            return 1
 
 
 class Order(models.Model):
@@ -60,18 +79,19 @@ class Order(models.Model):
             ('delivering', 'delivering'), 
             ('recieved', 'recieved')
             ], 
-            default='new'
+            default='new',
         )
     # tracker = 
-    # consult = models.BooleanField(default=1)
+    
     address = models.CharField(max_length=100) # delivery address (home) 
     comment = models.TextField(null=True, blank=True)
-    delivery_day = models.DateField(null=True, blank=True) 
-    cost = models.DecimalField(null=True, blank=True, max_digits=8, decimal_places=2, default=0) # autocalculated field 
-    delivery_cost = models.DecimalField(null=True, blank=True, max_digits=8, decimal_places=2, default=0)
-    margin = models.DecimalField(null=True, blank=True, max_digits=8, decimal_places=2, default=0)
+    delivery_day = models.DateField(null=True) 
+    cost = models.DecimalField(null=True, max_digits=8, decimal_places=2) # autocalculated field 
+    delivery_cost = models.DecimalField(null=True, max_digits=8, decimal_places=2)
+    margin = models.DecimalField(null=True, max_digits=8, decimal_places=2)
     payment_method = models.CharField(max_length=10, choices=[('cash', 'cash'),('card', 'card')], default ='cash')
     currency = models.CharField(max_length=5, choices=[('$', '$'), ('₺', '₺'), ('som', 'som')], default='$') # autocalculated field items currency 
+    consult = models.BooleanField(default=True)
 
     updated = models.DateTimeField(auto_now=True) #every time saved
     created = models.DateTimeField(auto_now_add=True) #first time saved or created
@@ -87,10 +107,7 @@ class Order(models.Model):
     @property
     def filled(self):
        return True if (self.track_code != None and self.delivery_day != None and self.cost != 0 and self.delivery_cost != 0 and self.margin != 0) else False
- 
-    # @property
-    # def filled(self):
-    #    return self.delivery_day and self.track_code
+
 
     def __str__(self):
         return self.code
@@ -98,21 +115,16 @@ class Order(models.Model):
 
 class Item(models.Model):
 
-    # class MetricUnit(models.TextChoices):
-    #     KILOGRAM = 'kg', _('kg')
-    #     GRAM = 'g', _('g')
-    #     POUND = 'lb', _('lb')
-
     # Order -- parent name, on_delete -- CASCADE/SET_NULL, one-to-many relationship
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    # category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True, max_length=200)
-    link = models.URLField(null=True, blank=True, max_length=200)
-    weight = models.DecimalField(null=True, blank=True, max_digits=5, decimal_places=2, default=0)
+    link = models.URLField(null=True, max_length=200)
+    weight = models.DecimalField(null=True, max_digits=5, decimal_places=2)
     metric_unit = models.CharField(max_length=2, choices=[('kg', 'kg'), ('g', 'g'), ('lb', 'lb')], default='g')
     quantity = models.PositiveIntegerField(default=1)
-    cost = models.DecimalField(null=True, blank=True, max_digits=8, decimal_places=2, default=0)
+    cost = models.DecimalField(null=True, max_digits=8, decimal_places=2)
     currency = models.CharField(max_length=5, choices=[('$', '$'), ('₺', '₺'), ('som', 'som')], default='$') 
 
     updated = models.DateTimeField(auto_now=True) 

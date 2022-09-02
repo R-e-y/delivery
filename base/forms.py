@@ -111,99 +111,87 @@ class ProfileForm(ModelForm):
         }
 
 
-class OrderForm(ModelForm):
+class UserOrderForm(ModelForm):
     class Meta:
         model = Order
 
-        fields = '__all__'
+        exclude = [
+            'customer', 
+            'courier',
+            'code', 
+            'track_code', 
+            'status', 
+            'delivery_day', 
+            'cost', 
+            'delivery_cost',
+            'margin',
+            'currency',
+            ]
 
         widgets = {
-            'customer': forms.HiddenInput(),
-            'courier': forms.HiddenInput(),
-            # code
-            # 'track_code': forms.TextInput({ "placeholder": "Tracking code"}),
-            'status': forms.HiddenInput(),
-            'comment': forms.TextInput({ "placeholder": "comment to the order"}),
+            'comment': forms.Textarea({ "placeholder": "comment to the order", "rows": 3}),
             'address': forms.TextInput({ "placeholder": "destination address"}),
+            'consult': forms.TextInput({ "title": 'Consultation'}),
+            # payment_method
+        };
+
+
+class BuyerOrderForm(ModelForm):
+    class Meta:
+        model = Order
+
+        exclude = [
+            'customer', 
+            'courier',
+            'code', 
+            'status', 
+            'address',
+            'comment',
+            'payment_method',
+            'consult',
+            ]
+
+        widgets = {
+            'track_code': forms.TextInput({ "placeholder": "tracking code given by a postal service"}),
             'delivery_day': forms.DateInput({ "placeholder": "approximate date of delivery"}),
-            'cost': forms.NumberInput({ "placeholder": "cost of all items"}),
+            'cost': forms.NumberInput({ "placeholder": "cost of all items", 'readonly': True}),
             'delivery_cost': forms.NumberInput({ "placeholder": "cost of delivery service"}),
             'margin': forms.NumberInput({ "placeholder": "cost of buyer service"}),
-            # payment_method
             # currency
         }
 
-
-class ItemForm(ModelForm):
+class UserItemForm(ModelForm):
     class Meta:
         model = Item
 
-        fields = '__all__' 
+        exclude = [
+            'order', 
+            'weight',
+            'metric_unit', 
+            'cost', 
+            'currency',
+            ] 
 
         widgets = {
-            'order': forms.HiddenInput(),
-            # 'description': forms.Textarea({'rows':3}),
+            'description': forms.Textarea({"rows": 3}),
             'link': forms.URLInput({"placeholder": "link of an item store or photo"})
-
         }
 
 
-# class OrderCustomerForm(ModelForm):
-#     class Meta:
-#         model = Order
+class BuyerItemForm(ModelForm):
+    class Meta:
+        model = Item
 
-#         fields = [
-#             'customer',
-#             'code',
-#             # 'status',
-#             'address',
-#             'comment',
-#             'payment_method'
-#         ]
+        exclude = [
+            'order', 
+            'name',
+            'link', 
+            'quantity', 
+            ]  
 
-#         widgets = {
-#             'customer': forms.HiddenInput(),
-#             'code': forms.HiddenInput(),
-#             # 'track_code': forms.TextInput({ "placeholder": "Tracking code"}),
-#             'status': forms.HiddenInput(),
-#             # 'comment': forms.TextInput({ "placeholder": "Comment"}),
-#             # 'address': forms.TextInput({ "placeholder": "Destination address"}),
-#             # 'delivery_day': forms.DateInput({ "placeholder": "Approximate date of delivery"}),
-#             # 'cost': forms.NumberInput({ "placeholder": "Cost of all items"}),
-#             # 'delivery_cost': forms.NumberInput({ "placeholder": "Cost of delivery service"}),
-#             # payment_method
-#             # currency
-#         }
+        widgets = {
+            'description': forms.Textarea({"rows": 3}),
 
-
-# class OrderBuyerForm(ModelForm):
-#     class Meta:
-#         model = Order
-
-#         fields = [
-#             'customer',
-#             'code',
-#             'track_code',
-#             # 'status',
-#             'comment',
-#             'delivery_day',
-#             'cost',
-#             'delivery_cost',
-#             'currency'
-#         ]
-
-#         widgets = {
-#             'customer': forms.HiddenInput(),
-#             # code
-#             # 'track_code': forms.TextInput({ "placeholder": "Tracking code"}),
-#             'status': forms.HiddenInput(),
-#             # 'comment': forms.TextInput({ "placeholder": "Comment"}),
-#             'address': forms.TextInput({ "placeholder": "Destination address"}),
-#             'delivery_day': forms.DateInput({ "placeholder": "Approximate date of delivery"}),
-#             'cost': forms.NumberInput({ "placeholder": "Cost of all items"}),
-#             # 'delivery_cost': forms.NumberInput({ "placeholder": "Cost of delivery service"}),
-#             # payment_method
-#             # currency
-#         }
+        }
 
 

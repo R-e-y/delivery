@@ -17,9 +17,8 @@
                 {% else %}
                 <form method="GET" action="{% url 'my-orders' %}">
                 {% endif %}
-                <h5>You can search by :status, code, customer, items and date created</h5>
                     <input type="text" name="q" placeholder="Search Orders..."/>
-                    
+                    <span>by status, code, customer, items and date created</span>
                 </form>
                 <!-- ***** SearchBar End ***** -->
                 {% if orders_count == 1 %}
@@ -33,23 +32,11 @@
                 </div>
                 {% endif %}
             </div>
-
-            
           </div>
-          <div class="left-info">
-          <div class="section-coupon">
-            <h3>Ваши Купоны</h3>
-            <h6>Осталось купонов для открытия бонуса: !Сюда coupons counter!</h6>
-            <!-- Сюда for in или for of  + -->
-            <span class="coupon-square-green">1</span>
-            <span class="coupon-square-white">2</span>
-            
-        </div>
-      </div>
         </div>
         <!-- ***** Summary Area End ***** -->
          <!-- ***** Orders Area ***** -->
-        <div class="col-lg-6 align-self-center" style="z-index: 10;">
+        <div class="col-lg-6 align-self-center">
             <div class="right-info">
               {% for order in orders %}
            
@@ -66,15 +53,18 @@
                     
                     <!-- < src="assets/images/service-icon-01.png" alt=""> -->
                   </div>
-                  {% if user_type == 'buyer' and order.consult == 1 %}
-                  <span class="icon_consult">
-                    <!-- < src="assets/images/service-icon-01.png" alt=""> -->
-                  </span>
-                  {% else %}
-                  <span class="icon_noConsult">
-                    <!-- < src="assets/images/service-icon-01.png" alt=""> -->
-                  </span>
+                  {% if user_type == 'buyer' %}
+                    {% if order.consult == True %}
+                    <span class="icon_consult">
+                      <!-- < src="assets/images/service-icon-01.png" alt=""> -->
+                    </span>
+                    {% else %}
+                    <span class="icon_noConsult">
+                      <!-- < src="assets/images/service-icon-01.png" alt=""> -->
+                    </span>
+                    {% endif %}
                   {% endif %}
+                  
                       <h5 class="username"><a href="{% url 'order' order.id %}" style="color: #dc8cdb;">{{order.code}}</a>
                         {% if not user_type == 'customer' %} 
                         {% if order.customer %}
@@ -131,26 +121,25 @@
                         {% endif %}
 
                       {% endif %}
-  </div>
-  <div class="fff">
-  <div>
 
-    
-    <small class="list">ITEMS:</small>
-  
-  </div>
-  <div class="nameitems">
-                      {% for item in order_items %}
-                      <div>
-                          {% if item.order == order %}
-                          <small>{{item.name}}</small>
-                          {% endif %}
-                      </div>  
-                      {% endfor %}
-                    </div>
                   </div>
-                    <div class="dates" style="font-size: 13px;">  updated: {{order.updated|date:'y-m-d'}}<br>created: {{order.created|date:'y-m-d'}} </div>
+
+                    <div class="fff">
+                      <div>
+                        <small class="list">ITEMS:</small> 
+                      </div>
+                      <div class="nameitems">
+                        {% for item in order_items %}
+                        <div>
+                            {% if item.order == order %}
+                            <small>{{item.name}}</small>
+                            {% endif %}
+                        </div>  
+                        {% endfor %}
+                      </div>
                     </div>
+                      <div class="dates" style="font-size: 13px;">  updated: {{order.updated|date:'y-m-d'}}<br>created: {{order.created|date:'y-m-d'}} </div>
+                </div>
                     <div class="bottom-content">
                       {% if user_type == 'customer' %} 
                         {% if order.status == 'new' or order.status == 'ready' %}
@@ -160,7 +149,7 @@
                         </svg></a>
 
                         <button id="delete" name="delete" onclick="onDelete()" >Delete</button>
-    <div id="confirmation" class="modal-container">
+    <div id="confirmation" class="modal-container1">
       <div class="modal-noti">
         
           <div class="modal-header">
@@ -174,7 +163,6 @@
             <button class="modal-button" onclick="onCancel()">Cancel</button>
             <button type="submit" id="form-submit" 
               class="modal-button modal-confirm-button"
-              
             >
               Confirm
             </button>
@@ -184,21 +172,13 @@
     </div>
                         {% endif %}
                       {% endif %}
-                      <!-- ***** Button ***** -->
-                       
-
-                    
-                        
-
+                      <!-- ***** Button End***** -->      
+                      <!-- ***** Reciept ***** -->   
+                
+                        <a href="{% url 'order-reciept' order.id %}">Reciept</a>
                       
-                       
-
-                    
-                      
-</div>
-                      
-                      
-                  
+                      <!-- ***** Reciept End***** -->                         
+</div>                
                 </div>
               </div>
               
