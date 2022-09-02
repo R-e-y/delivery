@@ -15,23 +15,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
-from .forms import UserForm, OrderForm, ItemForm, ProfileForm, UpdateUserForm, ReportForm
-from .models import Order, Item, Category, Profile
+from .forms import UserForm, UserOrderForm, BuyerOrderForm, UserItemForm, BuyerItemForm, ProfileForm, UpdateUserForm, ReportForm
+from .models import Order, Item, Category, Profile, Coupon
 
 # create your viwes here
-
-# orders = [
-#     {'id': 1, 'name': 'Jacket'},
-#     {'id': 2, 'name': 'Skirt'},
-#     {'id': 3, 'name': 'Dyson'},
-# ]
-
-# def track(request):
-#     data = { 'input class': 'form-control', 'value': 'RO256117306RU' }
-#     r = requests.post('https://parcelsapp.com/en/tracking/', data)
-#     print (r)
-#     return redirect ('home')
-
 
 def loginPage(request):
     page = 'login'
@@ -42,12 +29,6 @@ def loginPage(request):
     if request.method == "POST":
         username = request.POST.get('username').lower()
         password = request.POST.get('password')
-
-        # try:
-        #     user = User.objects.get(username=username)
-        # except:
-        #     messages.error(request, 'User does not exist')
-        
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
@@ -85,12 +66,14 @@ def registerPage(request):
             Profile.objects.create(
                 user = user
             )
+            
              
             if user_type == 'buyer':
-                # just output success message
+                messages.success(request, 'Courier registered successfully!')
                 return redirect('members')
             else:
                 login(request, user)
+                Coupon.objects.create(customer=user)
                 return redirect('home')
             
         else:
@@ -125,9 +108,6 @@ def members(request):
     user_type = request.user.groups.all()[0].name
     couriers = User.objects.filter(groups__name ='courier')
     customers = User.objects.filter(groups__name='customer')
-    # print(Order.objects.filter(courier__username='arif', status='recieved'))
-    # print(Order.objects.filter(courier__username='richard', status='recieved'))
-    # print(Order.objects.filter(courier__username='sanji', status='recieved'))
     context={'user_type': user_type, 'couriers': couriers, 'customers': customers}
     return render(request, 'base/members.html', context)
 
@@ -138,6 +118,7 @@ def deleteCourier(request, pk):
 
     if request.method == 'POST':
         courier.delete()
+        messages.info(request, 'Courier has been deleted.')
         return redirect('members')
 
     return render(request, 'base/delete.html', {'obj': courier})
@@ -153,6 +134,8 @@ def changeStatus(request, pk):
     if user_type == 'customer':
         if method == 'cash' and status == 'paid' or method == 'card' and status == 'delivering':
             new_status = 'recieved'
+            coupon = Coupon.objects.get(customer=order.customer)
+            coupon.increase()
             messages.info(request, 'Order has been recieved!')
 
     elif user_type == 'courier':
@@ -324,6 +307,10 @@ def profile(request, pk):
     user_type = request.user.groups.all()[0].name
     user = User.objects.get(id=pk)
     context={'user_type': user_type, 'user': user}
+
+    if user_type == 'customer':
+        coupon = Coupon.objects.get(customer=user)
+        context['coupon'] = coupon
     return render(request, 'base/profile.html', context)
 
 
@@ -468,23 +455,20 @@ def createOrder(request):
 def updateOrder(request, pk):
 
     order = Order.objects.get(id=pk)
-    form = OrderForm(instance=order) # gets fields prefilled
     user_type = request.user.groups.all()[0].name
 
     if user_type == 'customer':
-        form.fields['code'].widget = forms.HiddenInput()
-        form.fields['track_code'].widget = forms.HiddenInput()
-        form.fields['delivery_day'].widget = forms.HiddenInput()
-        form.fields['cost'].widget = forms.HiddenInput()
-        form.fields['delivery_cost'].widget = forms.HiddenInput()
-        form.fields['margin'].widget = forms.HiddenInput()
-        form.fields['currency'].widget = forms.HiddenInput()
+        form = UserOrderForm(instance=order) # gets fields prefilled
+        # form.fields['code'].widget = forms.HiddenInput()
     else:
-        form.fields['address'].widget = forms.HiddenInput()
-        form.fields['payment_method'].widget = forms.HiddenInput()
+        form = BuyerOrderForm(instance=order)
 
     if request.method == 'POST':
-        form = OrderForm(request.POST, instance=order) # specifying which order to update, otherwise new order will be created
+        if user_type == 'customer':
+            form = UserOrderForm(request.POST, instance=order) # specifying which order to update, otherwise new order will be created
+        else:
+            form = BuyerOrderForm(request.POST, instance=order)
+
         if form.is_valid():
             order = form.save()
             
@@ -512,10 +496,23 @@ def deleteOrder(request, pk):
 
     if request.method == 'POST':
         order.delete()
-        messages.success(request, 'Order successfully deleted.')
+        messages.info(request, 'Order has been deleted.')
         return redirect('my-orders')
 
     return render(request, 'base/delete.html', {'obj': order})
+
+
+@login_required(login_url='login')
+def orderReciept(request, pk):
+    order = Order.objects.get(id=pk)
+    order_items = order.item_set.all()
+    coupon = Coupon.objects.get(customer=order.customer)
+    if coupon.discount() == 1:
+        discount = 0
+    else:
+        discount = coupon.discount() * 100
+    return render(request, 'base/order-reciept.html', {'order': order, 'items': order_items, 'discount': discount})
+
 
 
 
@@ -553,23 +550,20 @@ def updateItem(request, pk):
     item = Item.objects.get(id=pk)
     order = item.order
     order_items = item.order.item_set.all() # .order_by(-created)
-    form = ItemForm(instance=item) # gets fields prefilled
+     # gets fields prefilled
     user_type = request.user.groups.all()[0].name
 
     if user_type == 'customer':
-        form.fields['weight'].widget = forms.HiddenInput()
-        form.fields['metric_unit'].widget = forms.HiddenInput()
-        form.fields['cost'].widget = forms.HiddenInput()
-        form.fields['currency'].widget = forms.HiddenInput()
+        form = UserItemForm(instance=item)
     else:
-        form.fields['category'].widget = forms.HiddenInput()
-        form.fields['name'].widget = forms.HiddenInput()
-        form.fields['description'].widget = forms.HiddenInput()
-        form.fields['link'].widget = forms.HiddenInput()
-        form.fields['quantity'].widget = forms.HiddenInput()
+        form = BuyerItemForm(instance=item)
 
     if request.method == 'POST':
-        form = ItemForm(request.POST, instance=item) # specifying which order to update, otherwise new order will be created
+        if user_type == 'customer':
+            form = UserItemForm(request.POST, instance=item)
+        else:
+            form = BuyerItemForm(request.POST, instance=item)
+
         if form.is_valid():
             form.save()
 
@@ -579,7 +573,7 @@ def updateItem(request, pk):
                     if not item.filled:
                         items_filled = 0
                 if items_filled:
-                    order.cost = sum([item.cost for item in order_items])
+                    order.cost = sum([item.cost * item.quantity for item in order_items])
                     order.status = 'ready' if order.filled else order.status
                     order.save()
             
