@@ -17,8 +17,9 @@
                 {% else %}
                 <form method="GET" action="{% url 'my-orders' %}">
                 {% endif %}
+                <h5>You can search by :status, code, customer, items and date created</h5>
                     <input type="text" name="q" placeholder="Search Orders..."/>
-                    <span>by status, code, customer, items and date created</span>
+                    
                 </form>
                 <!-- ***** SearchBar End ***** -->
                 {% if orders_count == 1 %}
@@ -32,7 +33,19 @@
                 </div>
                 {% endif %}
             </div>
+
+            
           </div>
+          <div class="left-info">
+          <div class="section-coupon">
+            <h3>Ваши Купоны</h3>
+            <h6>Осталось купонов для открытия бонуса: !Сюда coupons counter!</h6>
+            <!-- Сюда for in или for of  + -->
+            <span class="coupon-square-green">1</span>
+            <span class="coupon-square-white">2</span>
+            
+        </div>
+      </div>
         </div>
         <!-- ***** Summary Area End ***** -->
          <!-- ***** Orders Area ***** -->

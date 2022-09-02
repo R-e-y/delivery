@@ -2053,6 +2053,26 @@ section.more-info .count-area-content .count-title {
   white-space: nowrap;
 }
 
+.coupon-square-green{
+  margin-top: 10px;
+  box-sizing: border-box;
+  padding: 15px 8px;
+  display: inline-block;
+  line-height: 0px;
+  border: 1px solid ;
+  border-radius: 7px;
+  background: lightgreen;
+}
+.coupon-square-white{
+  margin-top: 10px;
+  box-sizing: border-box;
+  padding: 15px 8px;
+  display: inline-block;
+  line-height: 0px;
+  border: 1px solid ;
+  border-radius: 7px;
+  
+}
 
 /* 
 ---------------------------------------------
